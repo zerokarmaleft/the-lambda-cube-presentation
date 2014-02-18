@@ -202,7 +202,7 @@ application count of `s` to `z` corresponds to the number we want to represent.
 (def c1 (fn [s] (fn [z] (s z)))) ;; one s
 (def c2 (fn [s] (fn [z] (s (s z))))) ;; two s
 (def c3 (fn [s] (fn [z] (s (s (s z)))))) ;; three s
-(def c4 (fn [s] (f [z] (s (s (s (s z))))))) ;; four s
+(def c4 (fn [s] (fn [z] (s (s (s (s z))))))) ;; four s
 (def c5 (fn [s] (fn [z] (s (s (s (s (s z)))))))) ;; five s, ah...ah...ah!
 ```
 
