@@ -10,8 +10,8 @@ required to understand Church encodings, but getting a working REPL to
 interactively execute expressions is slightly more involved than something like
 `sudo apt-get install clojure`.
 
-1. Follow the instructions for (installing
-   Leiningen)[https://github.com/technomancy/leiningen#installation].
+1. Follow the instructions for [installing
+   Leiningen](https://github.com/technomancy/leiningen#installation).
 
 2. Clone this repository. `$ git clone https://github.com/zerokarmaleft/the-lambda-cube-presentation`
     
