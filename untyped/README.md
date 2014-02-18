@@ -10,18 +10,15 @@ required to understand Church encodings, but getting a working REPL to
 interactively execute expressions is slightly more involved than something like
 `sudo apt-get install clojure`.
 
-    1. Follow the instructions for (installing
-       Leiningen)[https://github.com/technomancy/leiningen#installation].
+1. Follow the instructions for [installing
+   Leiningen](https://github.com/technomancy/leiningen#installation).
 
-    2. Clone this repository.
-
-    ```$ git clone https://github.com/zerokarmaleft/the-lambda-cube-presentation```
+2. Clone this repository. `$ git clone https://github.com/zerokarmaleft/the-lambda-cube-presentation`
     
+3. `cd` into the `untyped/` directory.
 
-    3. `cd` into the `untyped/` directory.
-
-    4. Launch a REPL with `lein repl`. After launching the REPL, you should see
-       a prompt like this:
+4. Launch a REPL with `lein repl`. After launching the REPL, you should see
+   a prompt like this:
 
 ```
 nREPL server started on port 52742 on host 127.0.0.1
@@ -52,13 +49,13 @@ The `nil` signifies that the namespace was successfully loaded. Any problems
 would result in an exception message.
 
 In
-(church_booleans.clj)[https://github.com/zerokarmaleft/the-lambda-cube-presentation/untyped/src/untyped/church_booleans.clj],
+[church_booleans.clj](https://github.com/zerokarmaleft/the-lambda-cube-presentation/untyped/src/untyped/church_booleans.clj),
 there are two `def` expressions binding the symbols `c-true` and `c-false`
 (Church-encodings of `true` and `false`, to avoid name-clashing the underlying
 Boolean primitives) to strange-looking function definitions. Let's look at
 those:
 
-```
+```clojure
 (def c-true  (fn [t] (fn [f] t)))
 (def c-false (fn [t] (fn [f] f)))
 ```
@@ -72,7 +69,7 @@ turns out the untyped lambda calculus at its core doesn't provide multi-argument
 *higher-order functions* - a function that either accepts a function as an
 argument or a function that returns a function as a result. Using higher-order
 functions in this way is called
-(currying)[http://en.wikipedia.org/wiki/Currying].
+[currying](http://en.wikipedia.org/wiki/Currying).
 
 Let's try evaluating `c-true`:
 
@@ -107,7 +104,7 @@ user=> ((c-false "hello") "goodbye")
 Next, let's build some operations to work with these primitives. First up,
 `c-test`, a sort of if-then-else construct:
 
-```
+```clojure
 (def c-test
   (fn [b]
     (fn [v]
@@ -134,7 +131,7 @@ user=> (((c-test c-false) "hello") "goodbye")
 We can define Boolean operators to combine arbitrarily complex Boolean
 expressions in the same way as `c-test`.
 
-```
+```clojure
 (def c-and
   (fn [b1]
     (fn [b2]
@@ -149,7 +146,7 @@ Likewise, returning `c-false` is logically correct. If `b1` is `c-false`, then
 the expression `((b1 b2) c-false)` short-circuits reducing `b2`, and simply
 returns `c-false`.
 
-```
+```clojure
 (def c-or
   (fn [b1]
     (fn [b2]
@@ -164,7 +161,7 @@ not truthy. Likewise, returning `c-false` is logically correct. If `b1` is true,
 then the expression `((b1 c-true) b2)` short-circuits reducing `b2`, and simply
 returns `c-true`.
 
-```
+```clojure
 (def c-not
   (fn [b]
     ((b c-false) c-true)))
@@ -186,11 +183,11 @@ nil
 ```
 
 Looking inside
-(church_numerals.clj)[https://github.com/zerokarmaleft/the-lambda-cube-presentation/untyped/src/untyped/church_numerals.clj],
+[church_numerals.clj](https://github.com/zerokarmaleft/the-lambda-cube-presentation/untyped/src/untyped/church_numerals.clj),
 we see definitions for the first handful of natural numbers, starting with `c0`,
 which is the Church representation of 0:
 
-```
+```clojure
 (def c0 (fn [s] (fn [z] z)))
 ```
 
@@ -201,11 +198,11 @@ for `c0`, we obviously see that `s` is not applied to `z` at all. It is applied
 precisely 0 times. For `c1`, `c2`, `c3`, `c4`, and `c5`, we clearly see that the
 application count of `s` to `z` corresponds to the number we want to represent.
 
-```
+```clojure
 (def c1 (fn [s] (fn [z] (s z)))) ;; one s
 (def c2 (fn [s] (fn [z] (s (s z))))) ;; two s
 (def c3 (fn [s] (fn [z] (s (s (s z)))))) ;; three s
-(def c4 (fn [s] (f [z] (s (s (s (s z))))))) ;; four s
+(def c4 (fn [s] (fn [z] (s (s (s (s z))))))) ;; four s
 (def c5 (fn [s] (fn [z] (s (s (s (s (s z)))))))) ;; five s, ah...ah...ah!
 ```
 
@@ -214,7 +211,7 @@ can do better by combining `c0` and a external successor function (a successor
 function not used inside the representation, but a public function that works
 with Church numerals) to build up larger numbers.
 
-```
+```clojure
 (def c-succ
   (fn [n]
     (fn [s]
