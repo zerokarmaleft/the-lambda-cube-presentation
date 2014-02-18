@@ -71,7 +71,7 @@ argument or a function that returns a function as a result. Using higher-order
 functions in this way is called
 [currying](http://en.wikipedia.org/wiki/Currying).
 
-Let's try evaluating `c-true`:
+Let's try evaluating `c-true` with a single argument:
 
 ```
 user=> (c-true "hello")
@@ -112,11 +112,12 @@ Next, let's build some operations to work with these primitives. First up,
         ((b v) w)))))
 ```
 
-Three nested anonymous functions, which you should now see as one curried
-function that accepts three arguments. The first argument, `b`, is the Boolean
-value we want to test for truthiness. The second and third arguments, `v` and
-`w`, are values we want to return depending on the truthiness of `b`. If `b` is
-`c-true`, the expression `((b v) w)` will evaluate to `v`. If `b` is `c-false`,
+The body `c-test` contains three nested anonymous functions, which you
+should now see as one curried function that accepts three arguments.
+The first argument, `b`, is the Boolean value we want to test for
+truthiness. The second and third arguments, `v` and `w`, are values we
+want to return depending on the truthiness of `b`. If `b` is `c-true`,
+the expression `((b v) w)` will evaluate to `v`. If `b` is `c-false`,
 the expression `((b v) w` will evaluate to `w`.
 
 Testing in the REPL:
@@ -138,13 +139,14 @@ expressions in the same way as `c-test`.
       ((b1 b2) c-false))))
 ```
 
-`c-and` is a curried function that accepts two Boolean arguments. If `b1` is
-`c-true`, then the expression `((b1 b2) c-false)` will reduce to `b2`. If `b2`
-is `c-true`, then both `b1` and `b2` are truthy, hence returning `c-true` is
-logically correct. If `b2` is `c-false`, then `b1` and `b2` are not both truthy.
-Likewise, returning `c-false` is logically correct. If `b1` is `c-false`, then
-the expression `((b1 b2) c-false)` short-circuits reducing `b2`, and simply
-returns `c-false`.
+`c-and` is a curried function that accepts two Boolean arguments. If
+`b1` is `c-true`, then the expression `((b1 b2) c-false)` will reduce
+to `b2`, since it was passed as the first argument. If `b2` is
+`c-true`, then both `b1` and `b2` are truthy, hence returning `c-true`
+is logically correct. If `b2` is `c-false`, then `b1` and `b2` are not
+both truthy. Likewise, returning `c-false` is logically correct. If
+`b1` is `c-false`, then the expression `((b1 b2) c-false)`
+short-circuits reducing `b2`, and simply returns `c-false`.
 
 ```clojure
 (def c-or
@@ -153,13 +155,14 @@ returns `c-false`.
       ((b1 c-true) b2))))
 ```
 
-`c-or` is a curried function that accepts two Boolean arguments. If `b1` is
-`c-false`, then the expression `((b1 c-true) b2)` will reduce to `b2`. If `b2`
-is `c-true`, then at least one of `b1` and `b2` are truthy, hence returning
-`c-true` is logically correct. If `b2` is `c-false`, then `b1` and `b2` are both
-not truthy. Likewise, returning `c-false` is logically correct. If `b1` is true,
-then the expression `((b1 c-true) b2)` short-circuits reducing `b2`, and simply
-returns `c-true`.
+`c-or` is a curried function that accepts two Boolean arguments. If
+`b1` is `c-false`, then the expression `((b1 c-true) b2)` will reduce
+to `b2`, since `b2` is the second argument. If `b2` is `c-true`, then
+at least one of `b1` and `b2` are truthy, hence returning `c-true` is
+logically correct. If `b2` is `c-false`, then `b1` and `b2` are both
+not truthy. Likewise, returning `c-false` is logically correct. If
+`b1` is true, then the expression `((b1 c-true) b2)` short-circuits
+reducing `b2`, and simply returns `c-true`.
 
 ```clojure
 (def c-not
@@ -191,25 +194,27 @@ which is the Church representation of 0:
 (def c0 (fn [s] (fn [z] z)))
 ```
 
-`c0` is a curried function that expects an internal successor function to be
-passed as `s`, which is to be applied to the argument `z`. The application count
-of `s` to `z` is the representation of a number. In the expression `(fn [z] z)`
-for `c0`, we obviously see that `s` is not applied to `z` at all. It is applied
-precisely 0 times. For `c1`, `c2`, `c3`, `c4`, and `c5`, we clearly see that the
-application count of `s` to `z` corresponds to the number we want to represent.
+`c0` is a curried function that expects an internal successor function
+to be passed as `s`, which is to be applied to the argument `z`. The
+application count of `s` to `z` is the representation of the number.
+In the expression `(fn [z] z)` for `c0`, we obviously see that `s` is
+not applied to `z` at all. It is applied precisely 0 times. For `c1`,
+`c2`, `c3`, `c4`, and `c5`, we clearly see that the application count
+of `s` to `z` corresponds to the number we want to represent.
 
 ```clojure
-(def c1 (fn [s] (fn [z] (s z)))) ;; one s
-(def c2 (fn [s] (fn [z] (s (s z))))) ;; two s
-(def c3 (fn [s] (fn [z] (s (s (s z)))))) ;; three s
-(def c4 (fn [s] (fn [z] (s (s (s (s z))))))) ;; four s
+(def c1 (fn [s] (fn [z] (s z))))                 ;; one s
+(def c2 (fn [s] (fn [z] (s (s z)))))             ;; two s
+(def c3 (fn [s] (fn [z] (s (s (s z))))))         ;; three s
+(def c4 (fn [s] (fn [z] (s (s (s (s z)))))))     ;; four s
 (def c5 (fn [s] (fn [z] (s (s (s (s (s z)))))))) ;; five s, ah...ah...ah!
 ```
 
-Obviously, we don't have all day to define numbers manually in this fashion. We
-can do better by combining `c0` and a external successor function (a successor
-function not used inside the representation, but a public function that works
-with Church numerals) to build up larger numbers.
+Obviously, we don't have all day to define numbers manually in this
+fashion. We can do slightly better by combining `c0` and a external
+successor function (a successor function not used inside the
+representation, but a public function that works with Church numerals)
+to build up larger numbers.
 
 ```clojure
 (def c-succ
