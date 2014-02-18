@@ -183,7 +183,7 @@ nil
 ```
 
 Looking inside
-(church_numerals.clj)[https://github.com/zerokarmaleft/the-lambda-cube-presentation/untyped/src/untyped/church_numerals.clj],
+[church_numerals.clj](https://github.com/zerokarmaleft/the-lambda-cube-presentation/untyped/src/untyped/church_numerals.clj),
 we see definitions for the first handful of natural numbers, starting with `c0`,
 which is the Church representation of 0:
 
